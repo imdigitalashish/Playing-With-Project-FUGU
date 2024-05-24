@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progressive Web Apps</title>
+    <link rel="manifest" href="./manifest.json">
+
+    <style>
+        body {
+            overscroll-behavior-y: contain;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <button onclick="getPermission();">Open</button>
+    <a href="./my_world.html">Goto MyWorld</a>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+
+            window.onload = () => {
+                navigator.serviceWorker.register("./service_worker.js")
+                .then((res)=>{
+                    console.log(res)
+                })
+
+            }
+
+
+        }
+
+        async function getContacts() {
+            const properties = ['name', 'email', 'tel'];
+            const options = { multiple: true };
+            try {
+                const contacts = await navigator.contacts.select(properties, options);
+                console.log(contacts);
+            } catch (ex) {
+                // Handle any errors here.
+            }
+        }
+
+
+
+        let getPermission = async () => {
+            const shareData = {
+                title: "MDN",
+                text: "Learn web development on MDN!",
+                url: "https://developer.mozilla.org",
+            };
+            navigator.share(shareData);
+            console.log("Hello")
+            navigator.virtualKeyboard.show()
+            window.moveTo(14, 15);
+            window.resizeTo(100, 100);
+            return;
+
+            const [handle] = await window.showOpenFilePicker();
+
+
+            const file = await handle.getFile();
+
+            const contents = await file.text();
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = function (event) {
+                const imageDat = event.target.result;
+                console.log(imageDat);
+
+                let img = new Image();
+                img.src = imageDat;
+                document.body.appendChild(img);
+            }
+
+
+
+            console.log(contents);
+
+        }
+
+
+
+
+
+
+
+        async function getFileSystem() {
+            const opfs = await navigator.storage.getDirectory();
+
+
+            console.log(opfs);
+
+
+            const fileHandle = await opfs.getFileHandle('test.txt', { create: true });
+
+            const writable = await fileHandle.createWritable();
+
+            await writable.write('Hello World');
+
+            await writable.close();
+        }
+
+
+        async function writeFileSystem() {
+            const opfs = await navigator.storage.getDirectory();
+
+            const fileHandle = await opfs.getFileHandle('test.txt');
+            const file = await fileHandle.getFile();
+
+            console.log(await file.text())
+
+        }
+
+        writeFileSystem();
+
+        getFileSystem();
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+</body>
+
+</html>
